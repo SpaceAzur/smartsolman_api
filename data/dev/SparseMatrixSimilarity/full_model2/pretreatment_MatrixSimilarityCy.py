@@ -16,7 +16,7 @@ SEUIL_FREQUENCE = 12.0
 al = "abcdefghijklmnopqrstuvwxyz"
 ALPHABET = [l for l in al]
 
-with open("/smartsolman/data/src/fautes_orthographe/recette/dict_fautes_orthographes_92.json","r") as f:
+with open("/smartsolman/smartsolman_api/data/src/fautes_orthographe/dev/dict_fautes_orthographes_92.json","r") as f:
     CORRECTION_ORTHOGRAPHE = json.load(f)
 
 db  = NormalisationDataBase()
@@ -259,7 +259,7 @@ def doublons(liste):
 
 
 # chargement du sac de mot : fichier contenant tous les messages solman
-with open('/data/src/base_de_donnees/full/BOW_2020_10_17.json', encoding='utf8') as f:
+with open('/smartsolman/smartsolman_api/data/src/bdd/full/BOW.json', encoding='utf8') as f:
     data = json.load(f)
 
 # structuration du sac de mot
@@ -280,7 +280,7 @@ message = dicti.values()
 
 # sauvegarde de la liste "numéros de message" dans le fichier 'list_numbers'
 marshal.dump(numbers, open("list_numbers", 'wb'))
-'''
+
 # normalisation de chaque message du sac de mot
 a = 0
 doc = []
@@ -297,8 +297,8 @@ for m in message:
 # sauvegarde du corpus normalisés
 with open("docNormalized","w") as f:
     json.dump(doc,f)
-'''
-# chargement du corpus normalisé (étape qq peu inutile)
+
+# chargement du corpus normalisé
 with open("docNormalized","r") as f:
     doc = json.load(f)
 
@@ -322,11 +322,11 @@ mot_unique = getUniqueWords(corpus_normalized=doc, numbers=numbers)
 # sauvegarde les mots uniques en JSON
 with open("full_dico_unique.json",'w') as f:     
     json.dump(mot_unique,f)
-# sauvegarde en CSV
-with open("dict_unique.csv", "w") as csv_file:  
-    writer = csv.writer(csv_file)
-    for key, value in mot_unique.items():
-        writer.writerow([key, value])
+# # sauvegarde en CSV
+# with open("dict_unique.csv", "w") as csv_file:  
+#     writer = csv.writer(csv_file)
+#     for key, value in mot_unique.items():
+#         writer.writerow([key, value])
 
 # sauvegarde du dictionnaire des frequences
 with open("frequence","w") as f:
@@ -372,8 +372,8 @@ tfidf_classic = models.TfidfModel(corpus=corpus, normalize=True)                
 tfidf_custom = models.TfidfModel(corpus=corpus, dictionary=dictionary, smartirs=param)      # VERSION CUSTOM
 
 # sauvegarde du modèle
-tfidf_classic.save("tfidf_classic.model")
-tfidf_custom.save("tfidf_custom.model")
+tfidf_classic.save("classic_model/tfidf_classic.model")
+tfidf_custom.save("custom_model/tfidf_custom.model")
 
 # Génère l'indice matricielle du modèle
 index_classic = similarities.SparseMatrixSimilarity(tfidf_classic[corpus], num_features=len(dictionary))
@@ -386,8 +386,8 @@ index_custom = similarities.SparseMatrixSimilarity(tfidf_custom[corpus], num_fea
 #     os.makedirs("./custom_model/{}".format(MY_CUSTOM))
     
 # sauvegarde la matrice 
-index_classic.save('classic_model/full_sparse.index', separately=["index"])
-index_custom.save('custom_model/{}/full_sparse.index'.format(param), separately=["index"])
+index_classic.save('classic_model/sparse.index', separately=["index"])
+index_custom.save('custom_model/{}/sparse.index'.format(param), separately=["index"])
 
 # calcul et affichage des temps d'exécution
 end = time.time()

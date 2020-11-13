@@ -15,5 +15,5 @@ RUN pip install -r requirements.txt
 EXPOSE 5000
 
 # lance l'application a la creation du conteneur
-# CMD ["/smartsolman/app/dev/full_model/server_DF.py"]
-# ENTRYPOINT [ "python3" ]
+CMD ["/smartsolman/app/dev/full_model/server_DF.py"]
+ENTRYPOINT [ "python3" ]

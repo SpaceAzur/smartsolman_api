@@ -8,20 +8,6 @@ import heapq, scipy.sparse, math, random
 sys.path.append('.')
 from modules.normalisationdatabase import NormalisationDataBase
 
-# # ratio de Levenshtein
-# RATIO = 0.92
-
-# # pourcentage du corpus dans lequel apparait un token et au dessus duquel le token est considéré comme trop fréquent, et évacuer 
-# SEUIL_FREQUENCE = 12.0
-
-# al = "abcdefghijklmnopqrstuvwxyz"
-# ALPHABET = [l for l in al]
-
-# with open("/smartsolman/data/src/fautes_orthographe/dev/dict_fautes_orthographes_92.json","r") as f:
-#     CORRECTION_ORTHOGRAPHE = json.load(f)
-
-# db  = NormalisationDataBase()
-
 class Normalisation2(object):
 
     # ratio de Levenshtein
@@ -46,13 +32,14 @@ class Normalisation2(object):
         inventaire = {}
 
         # compte le nombre de message solman où apparait chaque token
-        for i, texte in enumerate(corpus_normalized):                              
+        for i, texte in enumerate(corpus_normalized):    
+            bar.update(c)                          
             for token in set(texte):
                 if token in inventaire.keys():
                     inventaire[token] = {"count": inventaire[token].get("count") + 1 , "orig": numbers[i]}
                 else:
                     inventaire[token] = {"count": 1, "orig": numbers[i]}                                                       
-
+            
         # sauvegarde le dictionnaire total du modele en JSON 
         with open("full_dico",'w') as f:      # je sauvegarde le dictionnaire du corpus
             json.dump(inventaire,f)
@@ -78,15 +65,10 @@ class Normalisation2(object):
 
     # décompose et recompose les termes contenant certains type de metacaractere
     def transformMeta(self, token: str):
-        # global lemma
-        # global lemma_eng
-        # global SAPtables
 
         tmp = [ re.split(r'[\-\_]',x) for x in token.split() ] # produit une liste de list
         tmp = [ item for sublist in tmp for item in sublist ] # reconverti en liste simple
-        
-        # lemmaRemoved = [ lemma[y] if y in lemma.keys() else y for y in tmp ]
-        
+                
         lemmaRemoved = []
         for element in tmp:
             q = self.db.frLemmatisation(element)
@@ -96,8 +78,6 @@ class Normalisation2(object):
                 lemmaRemoved.append(element)
 
         del element, q
-
-        # recompose_without_digit = "".join([ t for t in lemmaRemoved if t not in lemma.values() and not t.isdigit() and not t in SAPtables ])    
 
         recompose = []
         for element in lemmaRemoved:
@@ -134,7 +114,6 @@ class Normalisation2(object):
 
         ALPHABET = Normalisation2.ALPHABET
         CORRECTION_ORTHOGRAPHE = Normalisation2.CORRECTION_ORTHOGRAPHE
-
 
         # regex: suppression du format apostrophe r'\x92' <=> u'\u0092' (apparait comme un mini rectangle)
         x92 = re.compile(r'[\x92\']')
@@ -191,7 +170,6 @@ class Normalisation2(object):
                 if len(deux) == 0:
                     pass
                 else:
-                    # print(m, un, deux, len(deux))
                     message5bis.append(deux[0])
             else:
                 message5bis.append(m)
@@ -234,7 +212,6 @@ class Normalisation2(object):
             else:
                 message9.append(m)
 
-
         # pour être sûr, seconde suppression des stopwords 
         message10 = [ t for t in message9 if not self.db.isFrenchStopword(t) if not self.db.isEnglishStopword(t) ]
 
@@ -242,10 +219,8 @@ class Normalisation2(object):
         while '' in message10:
             message10.remove('')
 
-        # ????????????????? pourquoi encore
         message11 = []
         for m in message10:
             message11.append(re.sub(r'\W', '', str(m)))
 
         return message11
-
