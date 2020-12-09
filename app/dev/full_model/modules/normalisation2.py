@@ -102,7 +102,6 @@ class Normalisation2(object):
             return recompose_without_digit
 
 
-
     def apostropheX92(self, message: str):
         res = { re.sub(r'[\x92\n\t\r]', ' ', message) }
         res = str(res)
